@@ -47,7 +47,7 @@ benchmarks-pre-requisite:
 
 .PHONY: create-commits-simulation
 create-commits-simulation: benchmarks-pre-requisite ## Run create commits simulation
-	@echo "--- Running create commits simulation ---"	
+	@echo "--- Running create commits simulation ---"
 	@./gradlew gatlingRun --simulation org.apache.polaris.benchmarks.simulations.CreateCommits \
       -Dconfig.file=${APPLICATION_CONF_PATH}
 	@echo "--- Create commits simulation completed ---"

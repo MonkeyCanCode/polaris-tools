@@ -43,7 +43,7 @@ version: ## Display version information
 ##@ Polaris Console
 
 .PHONY: build
-build: lint ## Lint the console project
+build: lint ## Build console project
 	@echo "--- Building console project---"
 	@npm run build
 	@echo "--- Console project built ---"
@@ -61,7 +61,7 @@ dev: install ## Run the console project in development mode
 	@echo "--- Console project in development mode completed ---"
 
 .PHONY: format-check
-format-check: install ## Fix formatting in the console project
+format-check: install ## Check formatting in the console project
 	@echo "--- Checking formatting in the console project ---"
 	@npm run format:check
 	@echo "--- Formatting in the console project checked ---"
@@ -84,8 +84,8 @@ lint: format-check ## Lint the console project
 	@npm run lint
 	@echo "--- Console project linted ---"
 
-.PHONE: lint-fix
-lint-fix: format-fix ## Check formatting in the console project
+.PHONY: lint-fix
+lint-fix: format-fix ## Fix linting issues in the console project
 	@echo "--- Fixing linting issues in the console project ---"
 	@npm run lint -- --fix
 	@echo "--- Linting issues in the console project fixed ---"
