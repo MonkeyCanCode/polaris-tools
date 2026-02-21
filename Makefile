@@ -28,6 +28,9 @@ help: ## Display this help
 
 ##@ Benchmarks
 
+# Note: APPLICATION_CONF_PATH can be passed to specify a custom config file path.
+# Can be an absolute path or relative to the benchmarks/ directory.
+
 .PHONY: benchmarks-create-commits-simulation
 benchmarks-create-commits-simulation: ## Run create commits simulation
 	@$(MAKE) -C benchmarks create-commits-simulation

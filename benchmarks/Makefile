@@ -68,14 +68,14 @@ read-simulation: benchmarks-pre-requisite ## Run read simulation
 
 .PHONY: read-update-simulation
 read-update-simulation: benchmarks-pre-requisite ## Run read/update simulation
-	@echo "--- Running read/update simulation ---"	
+	@echo "--- Running read/update simulation ---"
 	@./gradlew gatlingRun --simulation org.apache.polaris.benchmarks.simulations.ReadUpdateTreeDataset \
       -Dconfig.file=${APPLICATION_CONF_PATH}
-	@echo "--- Read/Update simulation completed ---"      
+	@echo "--- Read/Update simulation completed ---"
 
 .PHONY: reports-clean
 reports-clean: ## Clean benchmark reports
-	@echo "--- Cleaning benchmark reports ---"	
+	@echo "--- Cleaning benchmark reports ---"
 	@rm -rf build/reports/gatling/*/ 2>/dev/null || true
 	@echo "--- Clean benchmark reports completed ---"
 
@@ -100,11 +100,11 @@ reports-list: ## List benchmark reports
 			fi; \
 		fi; \
 	done
-	@echo "--- List benchmark reports completed ---"	
+	@echo "--- List benchmark reports completed ---"
 
 .PHONY: weighted-workload-simulation
 weighted-workload-simulation: benchmarks-pre-requisite ## Run weighted workload simulation
 	@echo "--- Running weighted workload simulation ---"
 	@./gradlew gatlingRun --simulation org.apache.polaris.benchmarks.simulations.WeightedWorkloadOnTreeDataset \
       -Dconfig.file=${APPLICATION_CONF_PATH}
-	@echo "--- Weighted workload simulation completed ---"      
+	@echo "--- Weighted workload simulation completed ---"
