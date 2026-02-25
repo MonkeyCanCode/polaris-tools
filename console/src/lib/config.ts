@@ -23,6 +23,10 @@ interface AppConfig {
   VITE_POLARIS_PRINCIPAL_SCOPE: string
   VITE_OAUTH_TOKEN_URL?: string
   VITE_POLARIS_REALM_HEADER_NAME?: string
+  VITE_OIDC_ISSUER_URL?: string
+  VITE_OIDC_CLIENT_ID?: string
+  VITE_OIDC_REDIRECT_URI?: string
+  VITE_OIDC_SCOPE?: string
 }
 
 declare global {
@@ -50,8 +54,12 @@ function getConfig<T extends string | undefined>(key: keyof AppConfig, defaultVa
 
 export const config = {
   POLARIS_API_URL: getConfig("VITE_POLARIS_API_URL", ""),
-  POLARIS_REALM: getConfig("VITE_POLARIS_REALM", ""),
+  POLARIS_REALM: getConfig("VITE_POLARIS_REALM", "POLARIS"),
   POLARIS_PRINCIPAL_SCOPE: getConfig("VITE_POLARIS_PRINCIPAL_SCOPE", ""),
   OAUTH_TOKEN_URL: getConfig("VITE_OAUTH_TOKEN_URL", ""),
   REALM_HEADER_NAME: getConfig("VITE_POLARIS_REALM_HEADER_NAME", "Polaris-Realm"),
+  OIDC_ISSUER_URL: getConfig("VITE_OIDC_ISSUER_URL", ""),
+  OIDC_CLIENT_ID: getConfig("VITE_OIDC_CLIENT_ID", ""),
+  OIDC_REDIRECT_URI: getConfig("VITE_OIDC_REDIRECT_URI", ""),
+  OIDC_SCOPE: getConfig("VITE_OIDC_SCOPE", "openid profile email"),
 }
