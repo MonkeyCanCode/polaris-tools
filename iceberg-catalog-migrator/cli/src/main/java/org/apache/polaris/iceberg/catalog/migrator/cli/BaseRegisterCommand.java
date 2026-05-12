@@ -75,6 +75,14 @@ public abstract class BaseRegisterCommand implements Callable<Integer> {
   private boolean isDryRun;
 
   @CommandLine.Option(
+      names = {"--overwrite"},
+      description =
+          "Optional configuration to drop (without deleting data) and re-register a table in the target catalog if its "
+              + "metadata location has diverged from the source. Table already in sync are left unchanged. Without this "
+              + "option, registration fails if the table already exists in the target catalog.")
+  private boolean overwrite;
+
+  @CommandLine.Option(
       names = {"--disable-safety-prompts"},
       description = "Optional configuration to disable safety prompts which needs console input.")
   private boolean disablePrompts;
@@ -95,7 +103,7 @@ public abstract class BaseRegisterCommand implements Callable<Integer> {
   public BaseRegisterCommand() {}
 
   protected abstract CatalogMigrator catalogMigrator(
-      Catalog sourceCatalog, Catalog targetCatalog, boolean enableStackTrace);
+      Catalog sourceCatalog, Catalog targetCatalog, boolean overwrite, boolean enableStackTrace);
 
   protected abstract boolean canProceed(Catalog sourceCatalog);
 
@@ -132,7 +140,7 @@ public abstract class BaseRegisterCommand implements Callable<Integer> {
       }
 
       CatalogMigrator catalogMigrator =
-          catalogMigrator(sourceCatalog, targetCatalog, enableStackTrace);
+          catalogMigrator(sourceCatalog, targetCatalog, overwrite, enableStackTrace);
 
       if (identifiers.isEmpty()) {
         consoleLog.info("Identifying tables for {} ...", operation());

@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.stream.IntStream;
 import nl.altindag.log.LogCaptor;
 import nl.altindag.log.model.LogEvent;
+import org.apache.iceberg.Table;
 import org.apache.iceberg.catalog.Catalog;
 import org.apache.iceberg.catalog.Namespace;
 import org.apache.iceberg.catalog.TableIdentifier;
@@ -32,6 +33,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -197,6 +199,36 @@ public abstract class AbstractTestCatalogMigrator extends AbstractTest {
     Assertions.assertThat(result.registeredTableIdentifiers()).isEmpty();
     Assertions.assertThat(result.failedToRegisterTableIdentifiers()).contains(FOO_TBL2);
     Assertions.assertThat(result.failedToDeleteTableIdentifiers()).isEmpty();
+  }
+
+  @Test
+  public void testRegisterWithOverwrite() {
+    // register foo.tbl1
+    catalogMigratorWithDefaultArgs(false).registerTable(FOO_TBL1);
+    // update property to trigger a commit
+    sourceCatalog.loadTable(FOO_TBL1).updateProperties().set("sync-test", "v1").commit();
+    // register again without overwrite option to trigger error
+    CatalogMigrationResult result =
+        catalogMigratorWithDefaultArgs(false).registerTable(FOO_TBL1).result();
+    Assertions.assertThat(result.registeredTableIdentifiers()).isEmpty();
+    Assertions.assertThat(result.failedToRegisterTableIdentifiers()).containsExactly(FOO_TBL1);
+
+    // register again with overwrite
+    result =
+        ImmutableCatalogMigrator.builder()
+            .sourceCatalog(sourceCatalog)
+            .targetCatalog(targetCatalog)
+            .deleteEntriesFromSourceCatalog(false)
+            .overwrite(true)
+            .build()
+            .registerTable(FOO_TBL1)
+            .result();
+    Assertions.assertThat(result.registeredTableIdentifiers()).containsExactly(FOO_TBL1);
+    Assertions.assertThat(result.failedToRegisterTableIdentifiers()).isEmpty();
+
+    // verify target catalog has the updated metadata
+    Table targetTable = targetCatalog.loadTable(FOO_TBL1);
+    Assertions.assertThat(targetTable.properties().get("sync-test")).isEqualTo("v1");
   }
 
   @ParameterizedTest

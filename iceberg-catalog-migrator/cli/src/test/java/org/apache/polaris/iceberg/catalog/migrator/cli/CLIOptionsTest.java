@@ -251,6 +251,30 @@ public class CLIOptionsTest {
     Assertions.assertThat(run.getOut()).startsWith(System.getProperty("expectedCLIVersion"));
   }
 
+  @Test
+  public void testOverwriteOption() throws Exception {
+    List<String> catalogArgs =
+        Lists.newArrayList(
+            "--source-catalog-type",
+            "HADOOP",
+            "--source-catalog-properties",
+            "warehouse=/tmp/source",
+            "--target-catalog-type",
+            "HADOOP",
+            "--target-catalog-properties",
+            "warehouse=/tmp/target",
+            "--overwrite",
+            "--dry-run");
+    for (String command : Lists.newArrayList("register", "migrate")) {
+      List<String> args = Lists.newArrayList(command);
+      args.addAll(catalogArgs);
+      RunCLI run = RunCLI.run(args);
+      Assertions.assertThat(run.getErr())
+          .as("--overwrite should be recognized for '%s'", command)
+          .doesNotContain("Unmatched argument");
+    }
+  }
+
   private static void executeAndValidateResults(
       String command, List<String> args, String expectedMessage, int expectedErrorCode)
       throws Exception {

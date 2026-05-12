@@ -120,3 +120,14 @@ java -jar iceberg-catalog-migrator-cli-0.0.1.jar migrate \
 
 ## Tips
 1. Before migrating tables to Polaris, make sure the catalog is configured to the `base-location` same as source catalog `warehouse` location during catalog creation.
+2. If you have already registered tables and the source catalog metadata has changed (e.g., after table maintenance or new commits), you can use the `--overwrite`
+flags to update the target catalog metadata pointers without having to manually drop and target tables first.
+    ```shell
+    java -jar iceberg-catalog-migrator-cli-0.0.1.jar migrate \
+    --source-catalog-type REST  \
+    --source-catalog-properties uri=http://localhost:60904/api/catalog,warehouse=test,token=$TOKEN \
+    --target-catalog-type GLUE \
+    --target-catalog-properties warehouse=s3a://some-bucket/wh/,io-impl=org.apache.iceberg.aws.s3.S3FileIO \
+    --overwrite
+    ```
+    This command is idempotent: it will only perform a re-registration if the metadata location has actually changed.

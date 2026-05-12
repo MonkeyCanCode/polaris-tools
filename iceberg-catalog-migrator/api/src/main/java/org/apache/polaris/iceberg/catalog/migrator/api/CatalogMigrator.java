@@ -53,6 +53,15 @@ public abstract class CatalogMigrator {
   /** Delete the table entries from the source catalog after successful registration. */
   public abstract boolean deleteEntriesFromSourceCatalog();
 
+  /**
+   * Re-register the table in the target catalog if its metadata location has diverged from source.
+   * *
+   */
+  @Value.Default
+  public boolean overwrite() {
+    return false;
+  }
+
   /** Enable the stacktrace in logs in case of failures. */
   @Value.Default
   public boolean enableStacktrace() {
@@ -211,11 +220,42 @@ public abstract class CatalogMigrator {
   private boolean registerTableToTargetCatalog(TableIdentifier tableIdentifier) {
     try {
       createNamespacesIfNotExistOnTargetCatalog(tableIdentifier.namespace());
-      // register the table to the target catalog
-      TableOperations ops = ((BaseTable) sourceCatalog().loadTable(tableIdentifier)).operations();
-      targetCatalog().registerTable(tableIdentifier, ops.current().metadataFileLocation());
-      LOG.info("Successfully registered the table {}", tableIdentifier);
-      return true;
+
+      TableOperations sourceOps =
+          ((BaseTable) sourceCatalog().loadTable(tableIdentifier)).operations();
+      String sourceMetadataLocation = sourceOps.current().metadataFileLocation();
+
+      try {
+        targetCatalog().registerTable(tableIdentifier, sourceMetadataLocation);
+        LOG.info("Successfully registered the table {}", tableIdentifier);
+        return true;
+      } catch (AlreadyExistsException ex) {
+        if (overwrite()) {
+          TableOperations targetOps =
+              ((BaseTable) targetCatalog().loadTable(tableIdentifier)).operations();
+          String targetMetadataLocation = targetOps.current().metadataFileLocation();
+
+          if (sourceMetadataLocation.equals(targetMetadataLocation)) {
+            LOG.info(
+                "Table {} is already in sync with the target catalog. Skipping re-registration.",
+                tableIdentifier);
+            return true;
+          }
+
+          LOG.info(
+              "Table {} metadata location has changed. Dropping and re-registering it in the target catalog as overwrite is enabled.",
+              tableIdentifier);
+          targetCatalog().dropTable(tableIdentifier, false);
+          targetCatalog().registerTable(tableIdentifier, sourceMetadataLocation);
+          LOG.info("Successfully overwritten the table {}", tableIdentifier);
+          return true;
+        } else {
+          LOG.error(
+              "Table {} already exists in the target catalog. Use --overwrite to re-register it.",
+              tableIdentifier);
+          return false;
+        }
+      }
     } catch (Exception ex) {
       if (enableStacktrace()) {
         LOG.error("Unable to register the table {}", tableIdentifier, ex);

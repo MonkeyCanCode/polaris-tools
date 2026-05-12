@@ -76,6 +76,9 @@ tasks.named<RatTask>("rat").configure {
 
   // Rat can't scan binary images
   excludes.add("**/*.png")
+
+  // Misc build artifacts
+  excludes.add(".java-version")
 }
 
 // Pass environment variables:

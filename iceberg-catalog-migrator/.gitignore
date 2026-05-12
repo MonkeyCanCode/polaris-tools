@@ -17,6 +17,69 @@
 # under the License.
 #
 
+# Ignore Gradle GUI config
+gradle-app.setting
+
 # Ignore Gradle wrapper jar file
 gradle/wrapper/gradle-wrapper.jar
 gradle/wrapper/gradle-wrapper-*.sha256
+
+# Avoid ignore Gradle wrappper properties
+!gradle-wrapper.properties
+
+# Cache of project
+.gradletasknamecache
+
+# Eclipse Gradle plugin generated files
+# Eclipse Core
+.project
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
+.env
+
+# IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Gradle
+/.gradle
+/build-logic/.gradle
+/build-logic/.kotlin
+**/build/
+!src/**/build/
+
+# jenv
+.java-version
+
+# binary files
+*.class
+*.jar
+*.zip
+*.tar.gz
+*.tgz
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# macOS
+*.DS_Store
+
+# vscode
+.vscode/
+
+# Python Virtual Env
+.venv
+venv
+
+# AI / Agentic Development Tools
+.agents/
+.aider/
+.aider.chat.history.md
+.aider.input.history
+.codex/
+.claude/
+.cursor/
+.opencode/
+skills-lock.json

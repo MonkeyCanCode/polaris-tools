@@ -42,11 +42,12 @@ public class RegisterCommand extends BaseRegisterCommand {
 
   @Override
   protected CatalogMigrator catalogMigrator(
-      Catalog sourceCatalog, Catalog targetCatalog, boolean enableStackTrace) {
+      Catalog sourceCatalog, Catalog targetCatalog, boolean overwrite, boolean enableStackTrace) {
     return ImmutableCatalogMigrator.builder()
         .sourceCatalog(sourceCatalog)
         .targetCatalog(targetCatalog)
         .deleteEntriesFromSourceCatalog(false)
+        .overwrite(overwrite)
         .enableStacktrace(enableStackTrace)
         .build();
   }
